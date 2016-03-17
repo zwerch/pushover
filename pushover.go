@@ -106,10 +106,15 @@ type Message struct {
 	Url       string
 	UrlTitle  string
 	Priority  int
-	Retry     int
-	Expire    int
 	Timestamp int64
 	Sound     string
+
+	/* Emergency only */
+	// Required
+	Retry  int
+	Expire int
+	// Optional
+	Callback string
 }
 
 // A Receipt represent a receipt from the pushover API for a pushed critical message.
@@ -258,6 +263,10 @@ func (po *Pushover) Push(m *Message) (request, receipt string, err error) {
 
 			estr := fmt.Sprintf("%d", m.Expire)
 			message.Add("expire", estr)
+
+			if m.Callback != "" {
+				message.Add("callback", m.Callback)
+			}
 		}
 	default:
 		return "", "", ErrInvalidPriority
